@@ -1,0 +1,34 @@
+<!doctype html>
+<html ng-app="DatAppRudeWeather">
+<head>
+	<title>Rude Weather Channel</title>
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+	<link href="styles/main.css" rel="stylesheet">
+</head>
+<body>
+	<div class="main-container" ng-controller="AppCtrl">
+		<div>
+			<ng-view></ng-view>
+		</div>
+		<script type="text/javascript" src="lib/jquery/jquery-2.0.3.min.js"></script>
+		<script type="text/javascript" src="lib/jquery/jquery.cookie.js"></script>
+		<script type="text/javascript" src="lib/jqueryui/jquery-ui-1.10.3.custom.min.js"></script>
+		<script type="text/javascript" src="lib/underscore/underscore.min.js"></script>
+		<script type="text/javascript" src="lib/jquery/moment.js"></script>
+		<script type="text/javascript" src="lib/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="lib/angularjs/angular.min.js"></script>
+		<script type="text/javascript" src="lib/angularjs/angular-resource.min.js"></script>
+		<script type="text/javascript" src="lib/angularjs/angular-route.min.js"></script>
+		<script type="text/javascript" src="lib/angularjs/angular-animate.min.js"></script>
+		<script type="text/javascript" src="lib/browser/UAParser.js"></script>
+		<!--Libs-->
+	    <script src="scripts/app.js"></script>
+	    <script src="scripts/services.js"></script>
+	    <script src="scripts/controllers.js"></script>
+	    <script src="scripts/filters.js"></script>
+	    <script src="scripts/directives.js"></script>
+	</div>
+</body>
+</html>
