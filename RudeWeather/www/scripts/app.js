@@ -21,12 +21,36 @@ var _deviceInfo = function() {
 }
 
 var app = angular.module('DatAppRudeWeather', ['DatAppRudeWeather.filters', 'DatAppRudeWeather.services', 'DatAppRudeWeather.directives', 'DatAppRudeWeather.controllers', 'ngRoute', 'ngResource'],
-            function($routeProvider, $locationProvider) {
-            	$routeProvider.when("/", {templateUrl: "views/hi.html", controller: "HiCtrl"});
-            	$routeProvider.otherwise({redirectTo:'/'});
+    function($routeProvider, $locationProvider) {
+    	$routeProvider.when("/", {templateUrl: "views/weather.html", controller: "WeatherCtrl", resolve:
+    		{
+    			geoPoint: ['$q', '$location', function($q, profitAppService, $location){
+    				NProgress.start();
+                    var deferred = $q.defer();
+                    if ("geolocation" in navigator) {
+						navigator.geolocation.watchPosition(
+							function(geoPoint) {
+								deferred.resolve(geoPoint);
+								NProgress.done();
+							}, function(err) {
+								console.log(error);
+	                        	deferred.reject;
+	                        	NProgress.done();
+							}
+						);
+					} else {
+						//cordova plugin
+					}
+                    return deferred.promise;
+                }]
+    		}
+    	});
+    	$routeProvider.when("/settings", {templateUrl: "views/settings.html", controller: "SettingsCtrl"});
+    	$routeProvider.when("/login", {templateUrl: "views/settings.html", controller: "LoginCtrl"});
+    	$routeProvider.otherwise({redirectTo:'/login'});
 
-            	//$locationProvider.html5Mode(true);
-			});
+    	//$locationProvider.html5Mode(true);
+});
 
 app.run(['$location', '$rootScope', '$templateCache', function($location, $rootScope, $templateCache) {
 	$rootScope.$on('$routeChangeStart', function (event, next, current) {					

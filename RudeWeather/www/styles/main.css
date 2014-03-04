@@ -40,3 +40,28 @@ button {
 button:focus {
   outline: none;
 }
+.datapp-weather {
+  height: 100%;
+  width: 100%;
+}
+.time-bg {
+  z-index: 0;
+  height: 100%;
+  width: 100%;
+}
+.morning,
+.afternoon,
+.evening,
+.night {
+  background: rgba(0,0,0,0.4);
+}
+.rainy,
+.cloudy,
+.sunny,
+.snowy,
+.foggy,
+.rainy-cloudy,
+.sunny-cloudy,
+.snowy-cloudy {
+  background: #000;
+}

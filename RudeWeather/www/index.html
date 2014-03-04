@@ -5,15 +5,15 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
 	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+	<link rel="stylesheet" href="lib/ngProgress/ngProgress.css">
 	<link href="styles/main.css" rel="stylesheet">
 </head>
 <body>
 	<div class="main-container" ng-controller="AppCtrl">
-		<div>
-			<ng-view></ng-view>
-		</div>
+		<ng-view></ng-view>
 		<script type="text/javascript" src="lib/jquery/jquery-2.0.3.min.js"></script>
 		<script type="text/javascript" src="lib/jquery/jquery.cookie.js"></script>
+		<script type="text/javascript" src="lib/jquery/date.calc.js"></script>
 		<script type="text/javascript" src="lib/jqueryui/jquery-ui-1.10.3.custom.min.js"></script>
 		<script type="text/javascript" src="lib/underscore/underscore.min.js"></script>
 		<script type="text/javascript" src="lib/jquery/moment.js"></script>
@@ -22,7 +22,9 @@
 		<script type="text/javascript" src="lib/angularjs/angular-resource.min.js"></script>
 		<script type="text/javascript" src="lib/angularjs/angular-route.min.js"></script>
 		<script type="text/javascript" src="lib/angularjs/angular-animate.min.js"></script>
+		<script type="text/javascript" src="lib/ngProgress/ngProgress.js"></script>
 		<script type="text/javascript" src="lib/browser/UAParser.js"></script>
+		<script src="http://www.parsecdn.com/js/parse-1.2.16.min.js"></script>
 		<!--Libs-->
 	    <script src="scripts/app.js"></script>
 	    <script src="scripts/services.js"></script>
