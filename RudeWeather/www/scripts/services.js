@@ -23,6 +23,10 @@ services.factory('rudeWeatherService', ['$resource', '$http', function($resource
 	rudeWeatherAPI.weatherUrl = "http://api.openweathermap.org/data/2.5/weather?lat=:latitude&lon=:longitude&units=:unit";
 	rudeWeatherAPI.dataType = "json";
 
+	rudeWeatherAPI.getUnit = function()	{
+		return rudeWeatherAPI.unit;
+	}
+
 	Parse.initialize("VTb8mtR1ThRJsJSfGN6BAYkHRVKeILbTV3xMeBFN", "izRJBiva0k95YHq5SEVqxMFHM2rVC6SFA1J5ULd4");
 
 	rudeWeatherAPI.getCondition = function(geoPoint, callbackSuccess, callbackError) {

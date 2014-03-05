@@ -14,31 +14,31 @@ ctrls.controller('WeatherCtrl', ['$scope', '$location', '$rootScope', 'geoPoint'
 		var nowTime_mins = new Date().getMinutes();
 		var nowTime = nowTime_hour*60 + nowTime_mins;
 		var sunrise = calcSunriseSet(1, geoPoint.coords.latitude, geoPoint.coords.longitude);
-		var sunrise_hour = sunrise.split(":")[0];
-		var sunrise_mins = sunrise.split(":")[1];
+		var sunrise_hour = parseInt(sunrise.split(":")[0], 10);
+		var sunrise_mins = parseInt(sunrise.split(":")[1], 10);
 		var sunriseTime = sunrise_hour*60 + sunrise_mins;
 		var sunset = calcSunriseSet(0, geoPoint.coords.latitude, geoPoint.coords.longitude);
-		var sunset_hour = sunset.split(":")[0];
-		var sunset_mins = sunset.split(":")[1];
+		var sunset_hour = parseInt(sunset.split(":")[0], 10);
+		var sunset_mins = parseInt(sunset.split(":")[1], 10);
 		var sunsetTime = sunset_hour*60 + sunset_mins;
 		var noon = calcSolNoon(geoPoint.coords.longitude);
-		var none_hour = noon.split(":")[0];
-		var none_mins = noon.split(":")[1];
-		var noneTime = none_hour*60 + none_mins;
+		var noon_hour = parseInt(noon.split(":")[0], 10);
+		var noon_mins = parseInt(noon.split(":")[1], 10);
+		var noonTime = noon_hour*60 + noon_mins;
 
-		var midnightTime = 24*60;
+		var midnightTime = 24 * 60;
 
 
-		if(nowTime > sunriseTime && nowTime < noneTime){
+		if(nowTime > sunriseTime && nowTime < noonTime){
 			return "morning";
 		}
-		else if(nowTime >= noneTime && nowTime < sunsetTime){
+		else if(nowTime >= noonTime && nowTime < sunsetTime){
 			return "afternoon";
 		}
-		if(nowTime >= sunsetTime && nowTime < midnightTime){
+		else if(nowTime >= sunsetTime && nowTime < midnightTime){
 			return "evening";
 		}
-		if(nowTime <= sunriseTime){
+		else if(nowTime <= sunriseTime){
 			return "night";
 		}
 	}
@@ -46,6 +46,7 @@ ctrls.controller('WeatherCtrl', ['$scope', '$location', '$rootScope', 'geoPoint'
 		function(condition){
 			$scope.weatherCondition = condition;
 			$scope.cityName = condition.name;
+			$scope.timeOfDay = $scope.getTimeOfDay();
 			console.log($scope.weatherCondition);
 		}, function(err) {
 			console.log(err);

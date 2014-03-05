@@ -1,5 +1,15 @@
-<div class="datapp-weather">
-	<div class="time-bg" ng-class="getTimeOfDay()">
-
+<div class="datapp-weather" ng-cloak>
+	<div class="time-bg" ng-class="timeOfDay">
+		<div class="weather-location"><span ng-bind="cityName"></span></div>
+	    <div class="weather-current-temperature"><span ng-bind="weatherCondition.main.temp | roundTemperature"></span></div>
+	    <div class="weather-condition">
+	      <div class="weather-icon">
+	        <img src="http://i.imgur.com/7jMtyYq.png" alt="{{weatherCondition.weather[0].description}}" class="weather-img-icon">
+	      </div>
+	      <div class="weather-description">You don't need a weather app today!</div>
+	    </div>
+	    <div class="rude-description">
+	      Fuck you, Go fuck yourself.
+	    </div>
 	</div>
 </div>
