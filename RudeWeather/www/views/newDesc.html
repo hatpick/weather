@@ -1,0 +1,25 @@
+<div class="datapp-newDesc">
+	<div class="container">
+		<div class="alert alert-dismissable hidden">
+		  	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		  	<div class="alert-content"></div>
+		</div>
+		<form role="form" ng-submit="addComment()">
+			<div class="form-group">
+				<label for="WeatherCondition">Weather Condition</label>
+				<select name="WeatherCondition" id="WeatherCondition" style="width: 100%;" ng-model="comment.weatherCode">
+					<option value="{{id}}" ng-repeat="(id, condition) in weatherConditions">{{condition.desc}}</option>
+				</select>
+		  	</div>
+		  	<div class="form-group">
+		    	<label for="RudeComment">Rude Comment</label>
+		    	<input type="text" class="form-control" id="RudeComment" placeholder="Enter rude comment" maxlength="40" ng-model="comment.weatherComment" required>
+		  	</div>
+		  	<div class="form-group">
+		    	<label for="RudeDescription">Rude Description</label>
+		    	<textarea class="form-control" id="RudeDescription" placeholder="Enter rude description" maxlength="140" style="resize: none; height: 100px; padding: 5px 8px'" ng-model="comment.weatherDescription" required></textarea>
+		  	</div>
+		  	<button type="submit" class="btn btn-primary btn-block">Submit</button>
+		</form>
+	</div>
+</div>

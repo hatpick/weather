@@ -1,6 +1,7 @@
 var ctrls = angular.module('DatAppRudeWeather.controllers', []);
 var REFRESH_DELAY = 100;
 ctrls.controller('AppCtrl', ['$scope', '$location', '$rootScope', function($scope, $location, $rootScope) {
+	$rootScope.currentUser = Parse.User.current();
 }]);
 
 ctrls.controller('WeatherCtrl', ['$scope', '$location', '$rootScope', 'geoPoint', 'rudeWeatherService', function($scope, $location, $rootScope, geoPoint, rudeWeatherService) {
@@ -47,6 +48,7 @@ ctrls.controller('WeatherCtrl', ['$scope', '$location', '$rootScope', 'geoPoint'
 			$scope.weatherCondition = condition;
 			$scope.cityName = condition.name;
 			$scope.timeOfDay = $scope.getTimeOfDay();
+			$scope.weatherDesc = rudeWeatherService.getCodeMeaning(condition.weather[0].id);
 			console.log($scope.weatherCondition);
 		}, function(err) {
 			console.log(err);
@@ -54,7 +56,67 @@ ctrls.controller('WeatherCtrl', ['$scope', '$location', '$rootScope', 'geoPoint'
 	);
 }]);
 
-ctrls.controller('LoginCtrl', ['$scope', '$location', '$rootScope', function($scope, $location, $rootScope) {
+ctrls.controller('AddCommentCtrl', ['$scope', '$location', '$rootScope', 'rudeWeatherService', function($scope, $location, $rootScope, rudeWeatherService) {
+	$scope.weatherConditions = rudeWeatherService.getCodeMeaning(-1);
+	$scope.addComment = function() {
+		if($scope.comment.weatherCode == undefined){
+			$(".alert-content").html("Weather Condition Required!");
+			$(".alert").addClass("alert-danger").removeClass("hidden");
+			return;
+		}
+		rudeWeatherService.addNewRudeComment($scope.comment, function(data){
+			$(".alert-content").html("Success!");
+			$(".alert").removeClass().addClass("alert alert-success alert-dismissable");
+			console.log(data);
+		}, function(){
+			$(".alert-content").html("Error!");
+			$(".alert").removeClass().addClass("alert alert-danger alert-dismissable");
+		})
+	}
+}]);
+
+ctrls.controller('LoginCtrl', ['$scope', '$location', '$rootScope', '$timeout', function($scope, $location, $rootScope, $timeout) {
+	$scope.connectFacebook = function() {
+		NProgress.start();
+		if (Parse.User.current() == null) {
+			Parse.FacebookUtils.logIn("basic_info, email", {
+				success: function(user) {
+				    FB.api("/me",
+				    function (response) {
+				      	if (response && !response.error) {
+					        user.set("email", response.email);
+					        user.set("fName", response.first_name);
+					        user.set("lName", response.last_name);
+					        user.set("fid", response.id);
+					        user.save(null, {
+				        		success: function(user){
+					        		$rootScope.currentUser = user;
+					        		$timeout(function(){
+					        			NProgress.done();
+					        			$location.path("/");
+					        		}, 500);
+				        		},
+				        		error: function(user, error){
+				        			console.log(error);
+				        		}
+				        	});
+				    	}
+				    });
+				},
+				error: function(user, error) {
+
+				}
+			});
+		}
+	}
+
+	$scope.connectTwitter = function() {
+
+	}
+
+	$scope.connectGooglePlus = function() {
+
+	}
 }]);
 
 ctrls.controller('SettingsCtrl', ['$scope', '$location', '$rootScope', function($scope, $location, $rootScope) {

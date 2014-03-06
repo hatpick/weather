@@ -46,6 +46,7 @@ var app = angular.module('DatAppRudeWeather', ['DatAppRudeWeather.filters', 'Dat
     		}
     	});
     	$routeProvider.when("/settings", {templateUrl: "views/settings.html", controller: "SettingsCtrl"});
+    	$routeProvider.when("/addComment", {templateUrl: "views/newDesc.html", controller: "AddCommentCtrl"});
     	$routeProvider.when("/login", {templateUrl: "views/login.html", controller: "LoginCtrl"});
     	$routeProvider.otherwise({redirectTo:'/login'});
 
