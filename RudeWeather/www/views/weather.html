@@ -1,10 +1,11 @@
 <div class="datapp-weather" ng-cloak>
 	<div class="time-bg" ng-class="timeOfDay">
 		<div class="user-info">
-			<img ng-src="http://graph.facebook.com/{{currentUser.get('fid')}}/picture?type=large" alt="Facebook Profile Picture">
 			<div>
-				<div ng-bind="currentUser.get('fName') + ' ' + currentUser.get('lName')"></div>
-				<div ng-bind="cityName"></div>
+				<img ng-src="http://graph.facebook.com/{{currentUser.get('fid')}}/picture?type=large" alt="Facebook Profile Picture">
+			</div>
+			<div style="margin-left: 5px;">
+				<a href="#settings"><div ng-bind="currentUser.get('fName') + ' ' + currentUser.get('lName')"></div></a>
 			</div>
 		</div>
 		<div class="weather-current-temperature"><span ng-bind="weatherCondition.main.temp | roundTemperature"></span></div>
@@ -15,6 +16,7 @@
 	      <div class="weather-description"><span ng-bind="weatherDesc.desc"></span></div>
 	      <div class="weather-description">You don't need a weather app today!</div>
 	    </div>
+	    <div class="weather-current-city text-center" ng-bind="cityName"></div>
 	    <div class="rude-description">
 	      Fuck you, Go fuck yourself.
 	    </div>

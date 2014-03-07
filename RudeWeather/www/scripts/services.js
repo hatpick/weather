@@ -95,7 +95,23 @@ services.factory('rudeWeatherService', ['$resource', '$http', function($resource
 		return rudeWeatherAPI.unit;
 	}
 
+	rudeWeatherAPI.setConditionCache = function(condition)	{
+		localStorage.setItem("datapp-condition",JSON.stringify(condition));
+	}
+
+	rudeWeatherAPI.getConditionCache = function()	{
+		return JSON.parse(localStorage.getItem("datapp-condition"));
+	}
+
+	rudeWeatherAPI.setUnit = function(unit)	{
+		rudeWeatherAPI.unit = unit;
+	}
+
 	rudeWeatherAPI.getCondition = function(geoPoint, callbackSuccess, callbackError) {
+		if(rudeWeatherAPI.getConditionCache()){
+			callbackSuccess(rudeWeatherAPI.getConditionCache());
+			return;
+		}
 		var innerAPI = $resource(
 			rudeWeatherAPI.weatherUrl,
 			{latitude:geoPoint.coords.latitude, longitude: geoPoint.coords.longitude, unit: rudeWeatherAPI.unit},

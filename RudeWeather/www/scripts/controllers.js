@@ -45,6 +45,7 @@ ctrls.controller('WeatherCtrl', ['$scope', '$location', '$rootScope', 'geoPoint'
 	}
 	$scope.getWeatherCondition = rudeWeatherService.getCondition($scope.geoLocation,
 		function(condition){
+			rudeWeatherService.setConditionCache(condition);
 			$scope.weatherCondition = condition;
 			$scope.cityName = condition.name;
 			$scope.timeOfDay = $scope.getTimeOfDay();
