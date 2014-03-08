@@ -58,7 +58,7 @@ ctrls.controller('WeatherCtrl', ['$scope', '$location', '$rootScope', 'geoPoint'
 }]);
 
 ctrls.controller('AddCommentCtrl', ['$scope', '$location', '$rootScope', 'rudeWeatherService', function($scope, $location, $rootScope, rudeWeatherService) {
-	$scope.weatherConditions = rudeWeatherService.getCodeMeaning(-1);
+	$scope.weatherConditions = _.groupBy(rudeWeatherService.getCodeMeaning(-1), 'category');
 	$scope.addComment = function() {
 		if($scope.comment.weatherCode == undefined){
 			$(".alert-content").html("Weather Condition Required!");
@@ -68,6 +68,9 @@ ctrls.controller('AddCommentCtrl', ['$scope', '$location', '$rootScope', 'rudeWe
 		rudeWeatherService.addNewRudeComment($scope.comment, function(data){
 			$(".alert-content").html("Success!");
 			$(".alert").removeClass().addClass("alert alert-success alert-dismissable");
+			$("#RudeComment").val("");
+			$("#RudeDescription").val("");
+			$("#WeatherCondition")[0].selectedIndex = -1;
 			console.log(data);
 		}, function(){
 			$(".alert-content").html("Error!");

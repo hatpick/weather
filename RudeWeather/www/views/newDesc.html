@@ -8,7 +8,10 @@
 			<div class="form-group">
 				<label for="WeatherCondition">Weather Condition</label>
 				<select name="WeatherCondition" id="WeatherCondition" style="width: 100%;" ng-model="comment.weatherCode">
-					<option value="{{id}}" ng-repeat="(id, condition) in weatherConditions">{{condition.desc}}</option>
+					<optgroup ng-repeat="(category, conditions) in weatherConditions" label="{{category}}">
+						<option value="all-{{category}}">All "{{category}}" Conditions</option>
+						<option value="{{c.category}}" ng-repeat="c in conditions">{{c.desc}}</option>
+					</optgroup>
 				</select>
 		  	</div>
 		  	<div class="form-group">
