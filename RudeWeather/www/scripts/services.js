@@ -103,6 +103,14 @@ services.factory('rudeWeatherService', ['$resource', '$http', function($resource
 		return JSON.parse(localStorage.getItem("datapp-condition"));
 	}
 
+	rudeWeatherAPI.setRudeStuffCache = function(condition, rudeStuff) {
+		localStorage.setItem(condition, JSON.stringify(rudeStuff));
+	}
+
+	rudeWeatherAPI.getRudeStuffCache = function(condition)	{
+		return JSON.parse(localStorage.getItem(condition));
+	}
+
 	rudeWeatherAPI.setUnit = function(unit)	{
 		rudeWeatherAPI.unit = unit;
 	}
@@ -119,6 +127,29 @@ services.factory('rudeWeatherService', ['$resource', '$http', function($resource
 				getWCondition: {method: 'GET'}
 			});
 		innerAPI.getWCondition(callbackSuccess, callbackError);
+	}
+
+	rudeWeatherAPI.getRudeStuff = function(code, callbackSuccess, callbackError) {
+		var condition = rudeWeatherAPI.WeatherConditionCodes[code].category;
+		// if(rudeWeatherAPI.getRudeStuffCache(condition)){
+		// 	var rs = rudeWeatherAPI.getRudeStuffCache(condition);
+		// 	var rand = Math.floor((Math.random(1)*2713) % rs.length);
+		// 	callbackSuccess(rs[rand]);
+		// 	return;
+		// }
+		var RudeComment = Parse.Object.extend("RudeComment");
+		var query = new Parse.Query(RudeComment);
+		query.equalTo("weatherCode", "all-" + condition);
+		query.find({
+			success: function(results){
+				// rudeWeatherAPI.setRudeStuffCache(condition, results);
+				var rand = Math.floor((Math.random()*3817) % results.length);
+				callbackSuccess(results[rand]);
+			},
+			error: function(error){
+				callbackError(error);
+			}
+		});
 	}
 
 	rudeWeatherAPI.addNewRudeComment = function(newRudecomment, callbackSuccess, callbackError) {

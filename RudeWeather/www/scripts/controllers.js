@@ -50,9 +50,18 @@ ctrls.controller('WeatherCtrl', ['$scope', '$location', '$rootScope', 'geoPoint'
 			$scope.cityName = condition.name;
 			$scope.timeOfDay = $scope.getTimeOfDay();
 			$scope.weatherDesc = rudeWeatherService.getCodeMeaning(condition.weather[0].id);
-			console.log($scope.weatherCondition);
+			rudeWeatherService.getRudeStuff(condition.weather[0].id, function(rudeStuff){
+				$scope.$apply(function(){
+					$scope.rudeStuff = rudeStuff;
+					NProgress.done();
+				});
+			}, function(err){
+				console.log(err);
+				NProgress.done();
+			})
 		}, function(err) {
 			console.log(err);
+			NProgress.done();
 		}
 	);
 }]);

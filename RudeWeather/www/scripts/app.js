@@ -31,7 +31,6 @@ var app = angular.module('DatAppRudeWeather', ['DatAppRudeWeather.filters', 'Dat
 						navigator.geolocation.watchPosition(
 							function(geoPoint) {
 								deferred.resolve(geoPoint);
-								NProgress.done();
 							}, function(err) {
 								console.log(error);
 	                        	deferred.reject;

@@ -14,11 +14,9 @@
 	        <img ng-src="weatherDesc.category | weatherIcon" alt="{{weatherCondition.weather[0].description}}" class="weather-img-icon">
 	      </div>
 	      <div class="weather-description"><span ng-bind="weatherDesc.desc"></span></div>
-	      <div class="weather-description">You don't need a weather app today!</div>
+	      <div class="weather-description">{{rudeStuff.get("comment")}}</div>
 	    </div>
 	    <div class="weather-current-city text-center" ng-bind="cityName"></div>
-	    <div class="rude-description">
-	      Fuck you, Go fuck yourself.
-	    </div>
+	    <div class="rude-description">{{rudeStuff.get("description")}}</div>
 	</div>
 </div>
