@@ -24,13 +24,22 @@ var app = angular.module('DatAppRudeWeather', ['DatAppRudeWeather.filters', 'Dat
     function($routeProvider, $locationProvider) {
     	$routeProvider.when("/", {templateUrl: "views/weather.html", controller: "WeatherCtrl", resolve:
     		{
-    			geoPoint: ['$q', '$location', function($q, profitAppService, $location){
+    			geoInfo: ['$q', 'rudeWeatherService', '$location', function($q, rudeWeatherService, $location){
     				NProgress.start();
                     var deferred = $q.defer();
                     if ("geolocation" in navigator) {
 						navigator.geolocation.watchPosition(
 							function(geoPoint) {
-								deferred.resolve(geoPoint);
+								var geoInfo = new Object();
+								geoInfo.geoPoint = geoPoint;
+								rudeWeatherService.getCityName(geoPoint, function(data){
+									geoInfo.cityName = data.results[0].formatted_address.split(",")[0];
+									deferred.resolve(geoInfo);
+								}, function(err){
+									deferred.reject;
+									console.log("Google is down!");
+									NProgress.done();
+								});
 							}, function(err) {
 								console.log(error);
 	                        	deferred.reject;
@@ -52,7 +61,9 @@ var app = angular.module('DatAppRudeWeather', ['DatAppRudeWeather.filters', 'Dat
     	//$locationProvider.html5Mode(true);
 });
 
-app.run(['$location', '$rootScope', '$templateCache', function($location, $rootScope, $templateCache) {
+app.run(['$location', '$rootScope', '$templateCache', 'OpenFB', function($location, $rootScope, $templateCache, OpenFB) {
+	OpenFB.init("663966230332774", "https://www.facebook.com/connect/login_success.html", localStorage);
+
 	$rootScope.$on('$routeChangeStart', function (event, next, current) {					
 
 	});

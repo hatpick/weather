@@ -4,25 +4,24 @@ ctrls.controller('AppCtrl', ['$scope', '$location', '$rootScope', function($scop
 	$rootScope.currentUser = Parse.User.current();
 }]);
 
-ctrls.controller('WeatherCtrl', ['$scope', '$location', '$rootScope', 'geoPoint', 'rudeWeatherService', function($scope, $location, $rootScope, geoPoint, rudeWeatherService) {
-	$scope.geoLocation = geoPoint;
-	$scope.sunriseTime =
-	$scope.sunsetTime = calcSunriseSet(1, geoPoint.coords.latitude, geoPoint.coords.longitude);
-	$scope.cityName;
+ctrls.controller('WeatherCtrl', ['$scope', '$location', '$rootScope', 'geoInfo', 'rudeWeatherService', 'OpenFB', function($scope, $location, $rootScope, geoInfo, rudeWeatherService, OpenFB) {
+	$scope.geoLocation = geoInfo.geoPoint;
+	$scope.cityName = geoInfo.cityName;
+	$scope.sunsetTime = calcSunriseSet(1, geoInfo.geoPoint.coords.latitude, geoInfo.geoPoint.coords.longitude);
 	$scope.weatherCondition;
 	$scope.getTimeOfDay = function() {
 		var nowTime_hour = new Date().getHours();
 		var nowTime_mins = new Date().getMinutes();
 		var nowTime = nowTime_hour*60 + nowTime_mins;
-		var sunrise = calcSunriseSet(1, geoPoint.coords.latitude, geoPoint.coords.longitude);
+		var sunrise = calcSunriseSet(1, geoInfo.geoPoint.coords.latitude, geoInfo.geoPoint.coords.longitude);
 		var sunrise_hour = parseInt(sunrise.split(":")[0], 10);
 		var sunrise_mins = parseInt(sunrise.split(":")[1], 10);
 		var sunriseTime = sunrise_hour*60 + sunrise_mins;
-		var sunset = calcSunriseSet(0, geoPoint.coords.latitude, geoPoint.coords.longitude);
+		var sunset = calcSunriseSet(0, geoInfo.geoPoint.coords.latitude, geoInfo.geoPoint.coords.longitude);
 		var sunset_hour = parseInt(sunset.split(":")[0], 10);
 		var sunset_mins = parseInt(sunset.split(":")[1], 10);
 		var sunsetTime = sunset_hour*60 + sunset_mins;
-		var noon = calcSolNoon(geoPoint.coords.longitude);
+		var noon = calcSolNoon(geoInfo.geoPoint.coords.longitude);
 		var noon_hour = parseInt(noon.split(":")[0], 10);
 		var noon_mins = parseInt(noon.split(":")[1], 10);
 		var noonTime = noon_hour*60 + noon_mins;
@@ -45,12 +44,11 @@ ctrls.controller('WeatherCtrl', ['$scope', '$location', '$rootScope', 'geoPoint'
 	}
 	$scope.getWeatherCondition = rudeWeatherService.getCondition($scope.geoLocation,
 		function(condition){
-			rudeWeatherService.setConditionCache(condition);
-			$scope.weatherCondition = condition;
-			$scope.cityName = condition.name;
+			$scope.temperature = condition.currently.temperature;
+			$scope.weatherIconName = condition.currently.icon;
 			$scope.timeOfDay = $scope.getTimeOfDay();
-			$scope.weatherDesc = rudeWeatherService.getCodeMeaning(condition.weather[0].id);
-			rudeWeatherService.getRudeStuff(condition.weather[0].id, function(rudeStuff){
+			$scope.weatherDesc = condition.currently.summary;
+			rudeWeatherService.getRudeStuff($scope.weatherIconName, function(rudeStuff){
 				$scope.$apply(function(){
 					$scope.rudeStuff = rudeStuff;
 					NProgress.done();
@@ -64,10 +62,42 @@ ctrls.controller('WeatherCtrl', ['$scope', '$location', '$rootScope', 'geoPoint'
 			NProgress.done();
 		}
 	);
+
+	$scope.captureScreen = function() {
+		navigator.screenshot.save(function(error,res){
+			if(error){
+		    	console.error(error);
+		  	} else{
+		  		var file = new Parse.File(res.filePath.split("/")[res.filePath.split("/").length - 1], {base64: res.based64Content}, "image/png");
+		  		file.save().then(function() {
+		  			var SharedRudes = Parse.Object.extend("SharedRudes");
+		  			var sr = new SharedRudes();
+		  			sr.set("screenshot", file);
+		  			sr.setACL(new Parse.ACL(Parse.User.current()));
+		  			sr.save(null, {
+		  				success: function(data){
+		  				//Share on facebook
+						OpenFB.post("/me/photos", {
+							url: data.get("screenshot")._url,
+							message: "Current Weather in " + $scope.cityName + ", brought to you by RudeWeather!",
+							privacy:
+								{value: "SELF"}
+							});
+		  				},
+		  				error: function(error){
+		  					console.log("error");
+		  				}
+		  			});
+				}, function(error) {
+					console.log(error)
+				});
+		  	}
+		},'png',100);
+	}
 }]);
 
 ctrls.controller('AddCommentCtrl', ['$scope', '$location', '$rootScope', 'rudeWeatherService', function($scope, $location, $rootScope, rudeWeatherService) {
-	$scope.weatherConditions = _.groupBy(rudeWeatherService.getCodeMeaning(-1), 'category');
+	$scope.weatherConditions = rudeWeatherService.getCodeMeaning(-1);
 	$scope.addComment = function() {
 		if($scope.comment.weatherCode == undefined){
 			$(".alert-content").html("Weather Condition Required!");
@@ -88,38 +118,76 @@ ctrls.controller('AddCommentCtrl', ['$scope', '$location', '$rootScope', 'rudeWe
 	}
 }]);
 
-ctrls.controller('LoginCtrl', ['$scope', '$location', '$rootScope', '$timeout', function($scope, $location, $rootScope, $timeout) {
+ctrls.controller('LoginCtrl', ['$scope', '$location', '$rootScope', '$timeout', 'OpenFB', function($scope, $location, $rootScope, $timeout, OpenFB) {
 	$scope.connectFacebook = function() {
 		NProgress.start();
 		if (Parse.User.current() == null) {
-			Parse.FacebookUtils.logIn("basic_info, email", {
-				success: function(user) {
-				    FB.api("/me",
-				    function (response) {
-				      	if (response && !response.error) {
-					        user.set("email", response.email);
-					        user.set("fName", response.first_name);
-					        user.set("lName", response.last_name);
-					        user.set("fid", response.id);
-					        user.save(null, {
-				        		success: function(user){
-					        		$rootScope.currentUser = user;
+			OpenFB.login('email, publish_stream').then(
+                function () {
+			        OpenFB.get('/me').success(function (user) {
+			        	var fbToken = localStorage.fbtoken;
+			        	var expiresIn = localStorage.expiresin;
+
+			        	var expDate = new Date(new Date().getTime() + parseInt(expiresIn, 10) * 1000).toISOString();
+				        var authData = {
+			                id: user.id,
+			                access_token: fbToken,
+			                expiration_date: expDate
+				        }
+
+				        Parse.FacebookUtils.logIn(authData).then(function(puser){
+				        	puser.set("email", user.email);
+					        puser.set("fName", user.first_name);
+					        puser.set("lName", user.last_name);
+					        puser.set("fid", user.id);
+					        puser.save(null, {
+				        		success: function(ppuser){
+					        		$rootScope.currentUser = ppuser;
 					        		$timeout(function(){
 					        			NProgress.done();
 					        			$location.path("/");
 					        		}, 500);
 				        		},
-				        		error: function(user, error){
+				        		error: function(ppuser, error){
 				        			console.log(error);
 				        		}
 				        	});
-				    	}
-				    });
-				},
-				error: function(user, error) {
+				        }, function(error){
+				        	console.log(error);
+				        });
+			        });
+                },
+                function () {
+                    alert('OpenFB login failed');
+                });
+			// Parse.FacebookUtils.logIn("basic_info, email", {
+			// 	success: function(user) {
+			// 	    FB.api("/me",
+			// 	    function (response) {
+			// 	      	if (response && !response.error) {
+			// 		        user.set("email", response.email);
+			// 		        user.set("fName", response.first_name);
+			// 		        user.set("lName", response.last_name);
+			// 		        user.set("fid", response.id);
+			// 		        user.save(null, {
+			// 	        		success: function(user){
+			// 		        		$rootScope.currentUser = user;
+			// 		        		$timeout(function(){
+			// 		        			NProgress.done();
+			// 		        			$location.path("/");
+			// 		        		}, 500);
+			// 	        		},
+			// 	        		error: function(user, error){
+			// 	        			console.log(error);
+			// 	        		}
+			// 	        	});
+			// 	    	}
+			// 	    });
+			// 	},
+			// 	error: function(user, error) {
 
-				}
-			});
+			// 	}
+			// });
 		}
 	}
 

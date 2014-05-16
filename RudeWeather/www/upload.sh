@@ -1,0 +1,1 @@
+rsync -arv --exclude 'node_modules' ../www/ ghorashs@shell.onid.oregonstate.edu:~/public_html/weather

@@ -2,18 +2,21 @@
 	<div class="time-bg" ng-class="timeOfDay">
 		<div class="user-info">
 			<div>
-				<img ng-src="http://graph.facebook.com/{{currentUser.get('fid')}}/picture?type=large" alt="Facebook Profile Picture">
+				<img ng-src="http://graph.facebook.com/{{currentUser.get('fid')}}/picture?type=square" alt="Facebook Profile Picture">
 			</div>
 			<div style="margin-left: 5px;">
 				<a href="#settings"><div ng-bind="currentUser.get('fName') + ' ' + currentUser.get('lName')"></div></a>
 			</div>
+			<div class="share-facebook" ng-click="captureScreen()">
+				<i class="fa fa-facebook-square fa-lg"></i>&nbsp;Share
+			</div>
 		</div>
-		<div class="weather-current-temperature"><span ng-bind="weatherCondition.main.temp | roundTemperature"></span></div>
+		<div class="weather-current-temperature"><span ng-bind="temperature | roundTemperature"></span></div>
 	    <div class="weather-condition">
 	      <div class="weather-icon">
-	        <img ng-src="weatherDesc.category | weatherIcon" alt="{{weatherCondition.weather[0].description}}" class="weather-img-icon">
+	        <div class="climacon weather-icon weather-img-icon {{weatherIconName | iconConvert:timeOfDay}}" ng-cloak></div>
 	      </div>
-	      <div class="weather-description"><span ng-bind="weatherDesc.desc"></span></div>
+	      <div class="weather-description upper"><span ng-bind="weatherDesc"></span></div>
 	      <div class="weather-description">{{rudeStuff.get("comment")}}</div>
 	    </div>
 	    <div class="weather-current-city text-center" ng-bind="cityName"></div>
