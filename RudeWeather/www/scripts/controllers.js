@@ -4,7 +4,7 @@ ctrls.controller('AppCtrl', ['$scope', '$location', '$rootScope', function($scop
 	$rootScope.currentUser = Parse.User.current();
 }]);
 
-ctrls.controller('WeatherCtrl', ['$scope', '$location', '$rootScope', 'geoInfo', 'rudeWeatherService', 'OpenFB', function($scope, $location, $rootScope, geoInfo, rudeWeatherService, OpenFB) {
+ctrls.controller('WeatherCtrl', ['$scope', '$location', '$rootScope', 'geoInfo', 'rudeWeatherService', 'OpenFB', '$timeout', function($scope, $location, $rootScope, geoInfo, rudeWeatherService, OpenFB, $timeout) {
 	$scope.geoLocation = geoInfo.geoPoint;
 	$scope.cityName = geoInfo.cityName;
 	$scope.sunsetTime = calcSunriseSet(1, geoInfo.geoPoint.coords.latitude, geoInfo.geoPoint.coords.longitude);
@@ -48,6 +48,7 @@ ctrls.controller('WeatherCtrl', ['$scope', '$location', '$rootScope', 'geoInfo',
 			$scope.weatherIconName = condition.currently.icon;
 			$scope.timeOfDay = $scope.getTimeOfDay();
 			$scope.weatherDesc = condition.currently.summary;
+
 			rudeWeatherService.getRudeStuff($scope.weatherIconName, function(rudeStuff){
 				$scope.$apply(function(){
 					$scope.rudeStuff = rudeStuff;
@@ -64,35 +65,40 @@ ctrls.controller('WeatherCtrl', ['$scope', '$location', '$rootScope', 'geoInfo',
 	);
 
 	$scope.captureScreen = function() {
-		navigator.screenshot.save(function(error,res){
-			if(error){
-		    	console.error(error);
-		  	} else{
-		  		var file = new Parse.File(res.filePath.split("/")[res.filePath.split("/").length - 1], {base64: res.based64Content}, "image/png");
-		  		file.save().then(function() {
-		  			var SharedRudes = Parse.Object.extend("SharedRudes");
-		  			var sr = new SharedRudes();
-		  			sr.set("screenshot", file);
-		  			sr.setACL(new Parse.ACL(Parse.User.current()));
-		  			sr.save(null, {
-		  				success: function(data){
-		  				//Share on facebook
-						OpenFB.post("/me/photos", {
-							url: data.get("screenshot")._url,
-							message: "Current Weather in " + $scope.cityName + ", brought to you by RudeWeather!",
-							privacy:
-								{value: "SELF"}
-							});
-		  				},
-		  				error: function(error){
-		  					console.log("error");
-		  				}
-		  			});
-				}, function(error) {
-					console.log(error)
-				});
-		  	}
-		},'png',100);
+		$(".share-facebook").hide("fast", function(){
+			navigator.screenshot.save(function(error,res){
+				if(error){
+			    	console.error(error);
+			  	} else{
+			  		var file = new Parse.File(res.filePath.split("/")[res.filePath.split("/").length - 1], {base64: res.based64Content}, "image/png");
+			  		file.save().then(function() {
+			  			var SharedRudes = Parse.Object.extend("SharedRudes");
+			  			var sr = new SharedRudes();
+			  			sr.set("screenshot", file);
+			  			sr.setACL(new Parse.ACL(Parse.User.current()));
+			  			sr.save(null, {
+			  				success: function(data){
+				  				//Share on facebook
+								OpenFB.post("/me/photos", {
+									url: data.get("screenshot")._url,
+									message: "Current Weather in " + $scope.cityName + ", brought to you by RudeWeather!",
+									privacy:
+										{value: "ALL_FRIENDS"}
+									});
+								$(".share-facebook").show("slow", function(){
+									_noty("Shared on facebook!", "success");
+								});
+			  				},
+			  				error: function(error){
+			  					console.log("error");
+			  				}
+			  			});
+					}, function(error) {
+						console.log(error)
+					});
+			  	}
+			},'png',100);
+		});
 	}
 }]);
 
@@ -143,51 +149,35 @@ ctrls.controller('LoginCtrl', ['$scope', '$location', '$rootScope', '$timeout', 
 					        puser.save(null, {
 				        		success: function(ppuser){
 					        		$rootScope.currentUser = ppuser;
+					        		$.cookie("current", true, { expires: 14});
 					        		$timeout(function(){
 					        			NProgress.done();
 					        			$location.path("/");
 					        		}, 500);
 				        		},
 				        		error: function(ppuser, error){
+				        			$.cookie("current", false, { expires: 14});
 				        			console.log(error);
 				        		}
 				        	});
 				        }, function(error){
+				        	$.cookie("current", false, { expires: 14});
 				        	console.log(error);
 				        });
 			        });
                 },
                 function () {
                     alert('OpenFB login failed');
+                    $.cookie("current", false, { expires: 14});
                 });
-			// Parse.FacebookUtils.logIn("basic_info, email", {
-			// 	success: function(user) {
-			// 	    FB.api("/me",
-			// 	    function (response) {
-			// 	      	if (response && !response.error) {
-			// 		        user.set("email", response.email);
-			// 		        user.set("fName", response.first_name);
-			// 		        user.set("lName", response.last_name);
-			// 		        user.set("fid", response.id);
-			// 		        user.save(null, {
-			// 	        		success: function(user){
-			// 		        		$rootScope.currentUser = user;
-			// 		        		$timeout(function(){
-			// 		        			NProgress.done();
-			// 		        			$location.path("/");
-			// 		        		}, 500);
-			// 	        		},
-			// 	        		error: function(user, error){
-			// 	        			console.log(error);
-			// 	        		}
-			// 	        	});
-			// 	    	}
-			// 	    });
-			// 	},
-			// 	error: function(user, error) {
-
-			// 	}
-			// });
+		}
+		else {
+			$rootScope.currentUser = ppuser;
+    		$.cookie("current", true, { expires: 14});
+    		$timeout(function(){
+    			NProgress.done();
+    			$location.path("/");
+    		}, 500);
 		}
 	}
 

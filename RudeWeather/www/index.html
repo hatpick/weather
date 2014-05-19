@@ -16,6 +16,9 @@
 	<script type="text/javascript" src="lib/jqueryui/jquery-ui-1.10.3.custom.min.js"></script>
 	<script type="text/javascript" src="lib/underscore/underscore.min.js"></script>
 	<script type="text/javascript" src="lib/jquery/moment.js"></script>
+	<script type="text/javascript" src="lib/noty/js/noty/packaged/jquery.noty.packaged.min.js"></script>
+	<script type="text/javascript" src="lib/noty/js/noty/layouts/bottom.js"></script>
+	<script type="text/javascript" src="lib/noty/js/noty/themes/default.js"></script>
 	<script type="text/javascript" src="lib/bootstrap/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="lib/angularjs/angular.min.js"></script>
 	<script type="text/javascript" src="lib/angularjs/angular-resource.min.js"></script>
@@ -25,14 +28,17 @@
 	<script type="text/javascript" src="lib/browser/UAParser.js"></script>
 	<script src="http://www.parsecdn.com/js/parse-1.2.16.min.js"></script>
 	<!--Libs-->
-	<script src="cordova.js"></script>
+	<script src="cordova.js"></script >
+	<script src="scripts/rainy.min.js"></script>
     <script src="scripts/app.js"></script>
     <script src="scripts/services.js"></script>
     <script src="scripts/controllers.js"></script>
     <script src="scripts/filters.js"></script>
     <script src="scripts/directives.js"></script>
+
 </head>
 <body>
+	<div id="viewport"><div id="world"></div></div>
 	<div id="fb-root"></div>
 	<div class="main-container" ng-controller="AppCtrl">
 		<ng-view></ng-view>

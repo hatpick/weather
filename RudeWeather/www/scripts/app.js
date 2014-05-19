@@ -8,6 +8,24 @@ $.fn.usedHeight = function() {
     return $(this).height() + parseInt($(this).css("margin-top"), 10) + parseInt($(this).css("margin-bottom"), 10);
 };	
 
+var parseBoolean = function(val) {
+    return val == "true";
+}
+
+var _noty = function(message, type) {
+	var options = {
+        text : message,
+        template : '<div class="noty_message"><span class="noty_text"></span><div class="noty_close"></div></div>',
+        type : type,
+        dismissQueue : true,
+        layout : 'bottom',
+        timeout : 1500,
+        closeWith : ['button'],
+        buttons : false
+    };
+    var ntfcn = noty(options);
+};
+
 var _deviceInfo = function() {
 	var information = {};
 	var parser = UAParser();		
@@ -50,19 +68,58 @@ var app = angular.module('DatAppRudeWeather', ['DatAppRudeWeather.filters', 'Dat
 						//cordova plugin
 					}
                     return deferred.promise;
+                }],
+                checkUser: ['$q', '$location', function($q, $location){
+                	var _user = parseBoolean($.cookie("current"));
+                    var deferred = $q.defer();
+
+                    if(_user){
+                        deferred.resolve();
+                        NProgress.done();
+                    }
+                    else {
+                        deferred.reject();
+                        $location.path("/login");
+                        NProgress.done();
+                    }
+
+                    return deferred.promise;
                 }]
     		}
     	});
     	$routeProvider.when("/settings", {templateUrl: "views/settings.html", controller: "SettingsCtrl"});
     	$routeProvider.when("/addComment", {templateUrl: "views/newDesc.html", controller: "AddCommentCtrl"});
-    	$routeProvider.when("/login", {templateUrl: "views/login.html", controller: "LoginCtrl"});
+    	$routeProvider.when("/login", {templateUrl: "views/login.html", controller: "LoginCtrl", resolve:
+            {
+                session: ['$q', '$location', function($q, $location){
+                    var _user = parseBoolean($.cookie("current"));
+                    var deferred = $q.defer();
+
+                    if(_user) {
+                        deferred.reject();
+                        $location.path("/home");
+                    }
+                    else {
+                        deferred.resolve();
+                    }
+
+                    return deferred.promise;
+                }]
+            }
+        });
     	$routeProvider.otherwise({redirectTo:'/login'});
 
     	//$locationProvider.html5Mode(true);
 });
 
-app.run(['$location', '$rootScope', '$templateCache', 'OpenFB', function($location, $rootScope, $templateCache, OpenFB) {
+app.run(['$location', '$rootScope', '$templateCache', 'OpenFB', '$route', '$timeout', function($location, $rootScope, $templateCache, OpenFB, $route, $timeout) {
 	OpenFB.init("663966230332774", "https://www.facebook.com/connect/login_success.html", localStorage);
+
+	document.addEventListener("resume", function() {
+		$timeout(function(){
+			$route.reload();
+		});
+	}, false);
 
 	$rootScope.$on('$routeChangeStart', function (event, next, current) {					
 

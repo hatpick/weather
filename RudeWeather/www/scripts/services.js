@@ -1,6 +1,12 @@
 'use strict';
 
 Parse.initialize("VTb8mtR1ThRJsJSfGN6BAYkHRVKeILbTV3xMeBFN", "izRJBiva0k95YHq5SEVqxMFHM2rVC6SFA1J5ULd4");
+
+if(Parse.User.current())
+        $.cookie("current", true, { expires: 14});
+    else
+        $.cookie("current", false, { expires: 14});
+
 // window.fbAsyncInit = function() {
 //     Parse.FacebookUtils.init({
 //       appId      : '663966230332774',

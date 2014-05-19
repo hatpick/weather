@@ -88,7 +88,6 @@ button:focus {
 .user-info {
   padding: 10px;
   font-size: 12px;
-  font-weight: 600;
   color: #fff;
   display: inline-block;
   font-family: Helvetica, Sans-Serif;
@@ -141,7 +140,7 @@ button:focus {
 .weather-description {
   color: #ff9d47;
   font-weight: 300;
-  letter-spacing: 0.1px;
+  letter-spacing: 1px;
   padding: 5px;
 }
 .weather-description.upper {
@@ -185,11 +184,11 @@ button:focus {
   padding: 5px;
 }
 .share-facebook {
-  font-weight: 600;
   color: #fff;
   font-family: Helvetica, Sans-Serif;
   text-align: center;
   padding-left: 10px;
+  margin-top: 10px;
 }
 .morning {
   background: rgba(0,0,0,0);
@@ -260,4 +259,7 @@ button:focus {
 .sunny-cloudy,
 .snowy-cloudy {
   background: #000;
+}
+.overclouds {
+  z-index: 5;
 }
