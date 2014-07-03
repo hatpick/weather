@@ -192,6 +192,7 @@
 }
 .climacon.moon:before {
 	content: "\e02d";
+	color: silver;
 }
 .climacon.moon.new:before {
 	content: "\e02e";
